@@ -14,4 +14,7 @@ public class Factory {
         this.production = prod;
     }
 
+    public Integer getProduction() {
+        return production;
+    }
 }
