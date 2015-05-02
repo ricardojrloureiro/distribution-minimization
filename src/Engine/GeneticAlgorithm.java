@@ -117,7 +117,7 @@ public class GeneticAlgorithm extends Thread {
         Integer maxProduction = getMaxProduction(bitsRequired);
         System.out.println("Population max Production #" + maxProduction);
         System.out.println("_______________________________");
-        System.out.println("##############################");
+        System.out.println("\n\n");
 
         for(int x=0;x<populationNumber;x++) {
             System.out.println("Start a specific chromosome");
@@ -135,10 +135,6 @@ public class GeneticAlgorithm extends Thread {
                 Factory factory = new Factory("factory"+i,coords,production);
                 factories.add(factory);
             }
-
-            System.out.println("Generated the list of fabrics, size #" + factories.size());
-
-            System.out.println("Starting to generate service points");
             ArrayList<ServicePoint> servicePoints = new ArrayList<ServicePoint>();
             for(int i=0;i<servicePointsNumber;i++) {
                 Integer requiredProduction = r.nextInt(maxProduction);
@@ -155,7 +151,6 @@ public class GeneticAlgorithm extends Thread {
 
                 ServicePoint servicePoint = new ServicePoint("servicepoint"+i,coords,requiredProduction,prodReceived);
                 servicePoints.add(servicePoint);
-                System.out.println("generated service point with the representation: "+ servicePoint.getBinaryRepresentation());
             }
 
             Chromosome chrom = new Chromosome(servicePoints);
@@ -163,9 +158,14 @@ public class GeneticAlgorithm extends Thread {
 
             System.out.println("Generated a chromosome with the representation of:");
             System.out.println(chrom.getRepresentation());
-            System.out.println("##############################");
+            System.out.println("____________________");
 
             population.add(chrom);
+        }
+
+        System.out.println("\nFinal generation");
+        for(int i=0;i<population.size();i++){
+            System.out.println(population.get(i).getRepresentation());
         }
         return population;
     }
