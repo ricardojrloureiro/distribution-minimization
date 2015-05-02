@@ -1,9 +1,13 @@
 package Engine;
 
 import Models.Chromosome;
+import Models.Factory;
+import Models.ServicePoint;
 
+import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class GeneticAlgorithm extends Thread {
@@ -16,7 +20,7 @@ public class GeneticAlgorithm extends Thread {
 
     public GeneticAlgorithm(boolean elitism, Integer number,
                             double crossProb, double mutationProb){
-        this.chromosomes = generatePopulation();
+        this.chromosomes = generatePopulation(2,5,5,3);
         this.elitism = elitism;
         this.elitistNumber = number;
         this.crossoverProbability = crossProb;
@@ -25,6 +29,7 @@ public class GeneticAlgorithm extends Thread {
 
     public void run() {
 
+        /*
         boolean required=true;
 
         // while required to keep moving into next generations
@@ -55,7 +60,7 @@ public class GeneticAlgorithm extends Thread {
 
             Partials.representSolution(afterMutation);
 
-        }
+        }*/
 
     }
 
@@ -78,7 +83,7 @@ public class GeneticAlgorithm extends Thread {
         }
 
         for(int i = 1; i < chromosomes.size(); i++) {
-            chromosomeAdaptability.set(i,chromosomeAdaptability.get(i) +  chromosomeAdaptability.get(i-1));
+            chromosomeAdaptability.set(i, chromosomeAdaptability.get(i) + chromosomeAdaptability.get(i - 1));
         }
 
         // GENERATES A NUMBER BETWEEN 0-1 chromosomes.size() times.
@@ -104,8 +109,71 @@ public class GeneticAlgorithm extends Thread {
      * @return an array list of the current population
      */
 
-    private ArrayList<Chromosome> generatePopulation(){
-        return new ArrayList<Chromosome>();
+    private ArrayList<Chromosome> generatePopulation(Integer factoriesNumber, Integer servicePointsNumber,
+                                                     Integer bitsRequired,Integer populationNumber){
+        ArrayList<Chromosome> population = new ArrayList<Chromosome>();
+        System.out.println("Starting to generate population");
+
+        Integer maxProduction = getMaxProduction(bitsRequired);
+        System.out.println("Population max Production #" + maxProduction);
+        System.out.println("_______________________________");
+        System.out.println("##############################");
+
+        for(int x=0;x<populationNumber;x++) {
+            System.out.println("Start a specific chromosome");
+
+
+            ArrayList<Factory> factories = new ArrayList<Factory>();
+            Random r = new Random();
+            for(int i=0;i<factoriesNumber;i++) {
+
+                Integer xCord = r.nextInt(10);
+                Integer yCord = r.nextInt(10);
+                Point coords = new Point(xCord,yCord);
+                Integer production = r.nextInt(maxProduction)+1;
+
+                Factory factory = new Factory("factory"+i,coords,production);
+                factories.add(factory);
+            }
+
+            System.out.println("Generated the list of fabrics, size #" + factories.size());
+
+            System.out.println("Starting to generate service points");
+            ArrayList<ServicePoint> servicePoints = new ArrayList<ServicePoint>();
+            for(int i=0;i<servicePointsNumber;i++) {
+                Integer requiredProduction = r.nextInt(maxProduction);
+                Integer xCord = r.nextInt(10);
+                Integer yCord = r.nextInt(10);
+                Point coords = new Point(xCord,yCord);
+
+                HashMap<Factory,Integer> prodReceived = new HashMap<Factory,Integer>();
+                for(int j=0;j<factories.size();j++) {
+                    prodReceived.put(
+                      factories.get(j), r.nextInt(factories.get(j).getProduction())
+                    );
+                }
+
+                ServicePoint servicePoint = new ServicePoint("servicepoint"+i,coords,requiredProduction,prodReceived);
+                servicePoints.add(servicePoint);
+                System.out.println("generated service point with the representation: "+ servicePoint.getBinaryRepresentation());
+            }
+
+            Chromosome chrom = new Chromosome(servicePoints);
+            chrom.createRepresentation();
+
+            System.out.println("Generated a chromosome with the representation of:");
+            System.out.println(chrom.getRepresentation());
+            System.out.println("##############################");
+
+            population.add(chrom);
+        }
+        return population;
+    }
+
+    private int getMaxProduction(Integer bitsRequired) {
+        int maxValue=0;
+        for(int i=0;i<bitsRequired;i++) maxValue += Math.pow(2, i);
+        return maxValue;
     }
 
     /**

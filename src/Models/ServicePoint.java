@@ -31,27 +31,12 @@ public class ServicePoint {
         String representation = "";
 
         Iterator it = prodReceipts.entrySet().iterator();
-        Integer temp=0;
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
 
-            Factory tempFactory = (Factory) pair.getKey();
-            if(tempFactory.getProduction()>temp) {
-                temp = tempFactory.getProduction();
-            }
-            it.remove(); // avoids a ConcurrentModificationException
-        }
-
-        Integer size = Integer.toBinaryString(temp).length();
-
-        Iterator it2 = prodReceipts.entrySet().iterator();
-        while (it2.hasNext()) {
-            Map.Entry pair = (Map.Entry)it2.next();
-
             Integer tempProduction = (Integer) pair.getValue();
-            representation+= Partials.integerModified(tempProduction,size);
+            representation+= Partials.integerModified(tempProduction,5);
 
-            it2.remove(); // avoids a ConcurrentModificationException
         }
 
         return representation;
