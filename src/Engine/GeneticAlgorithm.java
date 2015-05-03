@@ -29,7 +29,7 @@ public class GeneticAlgorithm extends Thread {
 
     public void run() {
 
-        /*
+        
         boolean required=true;
 
         // while required to keep moving into next generations
@@ -60,7 +60,7 @@ public class GeneticAlgorithm extends Thread {
 
             Partials.representSolution(afterMutation);
 
-        }*/
+        }
 
     }
 
@@ -172,7 +172,8 @@ public class GeneticAlgorithm extends Thread {
 
     private int getMaxProduction(Integer bitsRequired) {
         int maxValue=0;
-        for(int i=0;i<bitsRequired;i++) maxValue += Math.pow(2, i);
+        for(int i=0;i<bitsRequired;i++) 
+        	maxValue += Math.pow(2, i);
         return maxValue;
     }
 

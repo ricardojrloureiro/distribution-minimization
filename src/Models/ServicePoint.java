@@ -16,7 +16,39 @@ public class ServicePoint {
     private HashMap<Factory,Integer> prodReceipts;
 
 
-    public ServicePoint(String name, Point position, Integer required,HashMap<Factory,Integer> prod) {
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Point getPosition() {
+		return position;
+	}
+
+	public void setPosition(Point position) {
+		this.position = position;
+	}
+
+	public Integer getRequired() {
+		return required;
+	}
+
+	public void setRequired(Integer required) {
+		this.required = required;
+	}
+
+	public HashMap<Factory, Integer> getProdReceipts() {
+		return prodReceipts;
+	}
+
+	public void setProdReceipts(HashMap<Factory, Integer> prodReceipts) {
+		this.prodReceipts = prodReceipts;
+	}
+
+	public ServicePoint(String name, Point position, Integer required,HashMap<Factory,Integer> prod) {
         this.name = name;
         this.position = position;
         this.required = required;
@@ -40,5 +72,10 @@ public class ServicePoint {
         }
 
         return representation;
+    }
+    
+    public double distanceToFactory(Factory factory) {
+    	Point p1 = factory.getPosition();
+    	return Math.sqrt(Math.pow((position.getX() - p1.getX()), 2) + Math.pow((position.getY() - p1.getY()), 2));
     }
 }

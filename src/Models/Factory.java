@@ -14,7 +14,15 @@ public class Factory {
         this.production = prod;
     }
 
-    public Integer getProduction() {
+    public String getName() {
+		return name;
+	}
+
+	public Point getPosition() {
+		return position;
+	}
+
+	public Integer getProduction() {
         return production;
     }
 }
