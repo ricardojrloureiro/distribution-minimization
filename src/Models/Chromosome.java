@@ -41,17 +41,18 @@ public class Chromosome {
 		double adapt = 0;
 
 		for(int i = 0; i < servicePoints.size(); i++) {
-			System.out.println("\n\n" + servicePoints.get(i).getName() +  ": \n");
 			HashMap factories = servicePoints.get(i).getProdReceipts();
 			Iterator it = (Iterator) factories.entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry pair = (Map.Entry) it.next();
-				System.out.println(((Factory) pair.getKey()).getName() + " = " + pair.getValue());
 				adapt += (double) ((Integer) pair.getValue()).intValue();
 			}
 			adapt -= servicePoints.get(i).getRequired();
 		}
+		System.out.println("\nBefore Pen: "  + adapt);
+		System.out.println("Pen: " + getPenalization());
 		adapt -= getPenalization();
+		System.out.println("Adaptation: "  + adapt);
 		return adapt;
 	}
 
@@ -74,8 +75,7 @@ public class Chromosome {
 				}
 			}
 		}
-		
-		return Math.pow(distance,2);
+		return distance;
 	}
 
 	public void setRepresentation(String representation) {
