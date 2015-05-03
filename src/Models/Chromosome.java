@@ -41,13 +41,13 @@ public class Chromosome {
 		double adapt = 0;
 
 		for(int i = 0; i < servicePoints.size(); i++) {
+			System.out.println("\n\n" + servicePoints.get(i).getName() +  ": \n");
 			HashMap factories = servicePoints.get(i).getProdReceipts();
 			Iterator it = (Iterator) factories.entrySet().iterator();
-			
 			while (it.hasNext()) {
 				Map.Entry pair = (Map.Entry) it.next();
-				System.out.println(pair.getKey() + " = " + pair.getValue());
-				adapt += (double) pair.getValue();
+				System.out.println(((Factory) pair.getKey()).getName() + " = " + pair.getValue());
+				adapt += (double) ((Integer) pair.getValue()).intValue();
 			}
 			adapt -= servicePoints.get(i).getRequired();
 		}
@@ -69,7 +69,7 @@ public class Chromosome {
 				Map.Entry pair = (Map.Entry) it.next();
 				Factory factory = (Factory) pair.getKey();
 				
-				if ((double) pair.getValue() != 0) {
+				if ((double) ((Integer) pair.getValue()).intValue() != 0) {
 					distance += servicePoints.get(i).distanceToFactory(factory);
 				}
 			}

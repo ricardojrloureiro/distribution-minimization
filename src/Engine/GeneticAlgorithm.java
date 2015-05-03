@@ -34,8 +34,8 @@ public class GeneticAlgorithm extends Thread {
 
         // while required to keep moving into next generations
         while(required) {
-            ArrayList<Chromosome> newGeneration = new ArrayList<Chromosome>();
-
+            ArrayList<Chromosome> newGeneration = chromosomes;
+            
             //secures the best
             if(elitism) {
                 for(int i=0;i<elitistNumber;i++) {
@@ -59,6 +59,7 @@ public class GeneticAlgorithm extends Thread {
 
 
             Partials.representSolution(afterMutation);
+            required = false;
 
         }
 
@@ -207,10 +208,11 @@ public class GeneticAlgorithm extends Thread {
                 chromosomesClone.add(crossed.get(j));
             }
 
-            // adiciona o ultimo elemento caso seja ímpar
+            // adiciona o ultimo elemento caso seja impar
+            /*
             if(toCross.get(i+2)==null) {
                 chromosomesClone.add(toCross.get(i+1));
-            }
+            }*/
         }
 
         return chromosomesClone;
@@ -265,7 +267,10 @@ public class GeneticAlgorithm extends Thread {
      * @return
      */
     private Chromosome mostAdapted() {
-
+    	/*				TESTE
+    	if (chromosomes.size() == 0) {
+    		return null;
+    	}*/
         Chromosome temp=chromosomes.get(0);
         for(int i=1;i<chromosomes.size();i++) {
             if(temp.getAdaptability()<chromosomes.get(i).getAdaptability()) {
