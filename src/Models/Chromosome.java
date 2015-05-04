@@ -57,38 +57,38 @@ public class Chromosome {
 	/**
 	 * @return the penalization of this chromosome
 	 */
-	public double getPenalization() {
+	public double getPenalization(int maxRepresentation) {
 		double distance = 0;
-		
-		for(int i = 0; i < servicePoints.size(); i++) {
-			HashMap factories = servicePoints.get(i).getProdReceipts();
-			Iterator it = (Iterator) factories.entrySet().iterator();
-			
-			while (it.hasNext()) {
-				Map.Entry pair = (Map.Entry) it.next();
-				Factory factory = (Factory) pair.getKey();
-				
-				if ((double) ((Integer) pair.getValue()).intValue() != 0) {
-					distance += servicePoints.get(i).distanceToFactory(factory);
+		String servicePointString;
+		String factoryString;
+		int numberOfServicePoints = servicePoints.size();
+
+		for (int i = 0; i < numberOfServicePoints; i++) {
+			servicePointString = (this.representation).substring(i*numberOfServicePoints,(i+1)*numberOfServicePoints);
+			for (int j = 0; j < maxRepresentation; j++) {
+				factoryString = servicePointString.substring(j*maxRepresentation, (j+1)*maxRepresentation);
+				if(binaryToInteger(factoryString) != 0) {
+					distance += servicePoints.get(j).distanceToFactory(servicePoints.get(j).getFactories().get(j));
 				}
 			}
 		}
 		return distance;
 	}
 
+
 	public void setRepresentation(String representation) {
 		this.representation = representation;
 	}
-	
+
 	public int binaryToInteger(String binary) {
-	    char[] numbers = binary.toCharArray();
-	    int result = 0;
-	    for (int i=numbers.length; i==0; i--) {
-	        if (numbers[i]=='1') {
-	          result += (numbers.length-i+1)*2;
-	        }
-	    }
-	    return result;
+		char[] numbers = binary.toCharArray();
+		int result = 0;
+		for (int i=numbers.length; i==0; i--) {
+			if (numbers[i]=='1') {
+				result += (numbers.length-i+1)*2;
+			}
+		}
+		return result;
 	}
 }
 

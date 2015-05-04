@@ -4,19 +4,25 @@ package Models;
 import Engine.Partials;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class ServicePoint {
 
-    private String name;
-    private Point position;
-    private Integer required;
-    private HashMap<Factory,Integer> prodReceipts;
+	private String name;
+	private Point position;
+	private Integer required;
+	private HashMap<Factory,Integer> prodReceipts;
+	private ArrayList<Factory> factories;
 
 
-    public String getName() {
+	public ArrayList<Factory> getFactories() {
+		return factories;
+	}
+
+	public String getName() {
 		return name;
 	}
 
@@ -49,33 +55,33 @@ public class ServicePoint {
 	}
 
 	public ServicePoint(String name, Point position, Integer required,HashMap<Factory,Integer> prod) {
-        this.name = name;
-        this.position = position;
-        this.required = required;
-        this.prodReceipts = prod;
-    }
+		this.name = name;
+		this.position = position;
+		this.required = required;
+		this.prodReceipts = prod;
+	}
 
-    /**
-     * Depending of the quantity received between the different factories generates a specific string
-     * @return the string of a specific service point
-     */
-    public String getBinaryRepresentation() {
-        String representation = "";
+	/**
+	 * Depending of the quantity received between the different factories generates a specific string
+	 * @return the string of a specific service point
+	 */
+	public String getBinaryRepresentation() {
+		String representation = "";
 
-        Iterator it = prodReceipts.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
+		Iterator it = prodReceipts.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry pair = (Map.Entry)it.next();
 
-            Integer tempProduction = (Integer) pair.getValue();
-            representation+= Partials.integerModified(tempProduction,5);
+			Integer tempProduction = (Integer) pair.getValue();
+			representation+= Partials.integerModified(tempProduction,5);
 
-        }
+		}
 
-        return representation;
-    }
-    
-    public double distanceToFactory(Factory factory) {
-    	Point p1 = factory.getPosition();
-    	return Math.sqrt(Math.pow((position.getX() - p1.getX()), 2) + Math.pow((position.getY() - p1.getY()), 2));
-    }
+		return representation;
+	}
+
+	public double distanceToFactory(Factory factory) {
+		Point p1 = factory.getPosition();
+		return Math.sqrt(Math.pow((position.getX() - p1.getX()), 2) + Math.pow((position.getY() - p1.getY()), 2));
+	}
 }
