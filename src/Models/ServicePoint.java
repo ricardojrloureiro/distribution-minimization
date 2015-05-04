@@ -1,6 +1,7 @@
 package Models;
 
 
+import Engine.GeneticAlgorithm;
 import Engine.Partials;
 
 import java.awt.*;
@@ -17,8 +18,14 @@ public class ServicePoint {
 	private HashMap<Factory,Integer> prodReceipts;
 	private ArrayList<Factory> factories;
 
+    public ServicePoint(String s, Point cords, Integer value) {
+        this.name = s;
+        this.position = cords;
+        this.required = value;
+    }
 
-	public ArrayList<Factory> getFactories() {
+
+    public ArrayList<Factory> getFactories() {
 		return factories;
 	}
 
@@ -65,7 +72,7 @@ public class ServicePoint {
 	 * Depending of the quantity received between the different factories generates a specific string
 	 * @return the string of a specific service point
 	 */
-	public String getBinaryRepresentation() {
+	public String getBinaryRepresentation(Integer representationNumber) {
 		String representation = "";
 
 		Iterator it = prodReceipts.entrySet().iterator();
@@ -73,7 +80,7 @@ public class ServicePoint {
 			Map.Entry pair = (Map.Entry)it.next();
 
 			Integer tempProduction = (Integer) pair.getValue();
-			representation+= Partials.integerModified(tempProduction,5);
+			representation+= Partials.integerModified(tempProduction, representationNumber);
 
 		}
 
@@ -84,4 +91,8 @@ public class ServicePoint {
 		Point p1 = factory.getPosition();
 		return Math.sqrt(Math.pow((position.getX() - p1.getX()), 2) + Math.pow((position.getY() - p1.getY()), 2));
 	}
+
+    public void setFactories(ArrayList<Factory> factories) {
+        this.factories = factories;
+    }
 }

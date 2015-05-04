@@ -21,7 +21,7 @@ public class Partials {
         ArrayList<Double> randomNumbers = new ArrayList<Double>();
         for(int i=0;i<size;i++) {
             Random r = new Random();
-            double generated = (r.nextInt(10001)/10000);
+            double generated = (r.nextDouble());
             randomNumbers.add(generated);
         }
         return randomNumbers;

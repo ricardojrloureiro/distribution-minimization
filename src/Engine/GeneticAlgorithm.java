@@ -5,27 +5,22 @@ import Models.Factory;
 import Models.ServicePoint;
 
 import java.awt.*;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 public class GeneticAlgorithm extends Thread {
 
     private final Integer elitistNumber;
-    private ArrayList<Chromosome> chromosomes;
+    private ArrayList<Chromosome> chromosomes = new ArrayList<Chromosome>();
     private Boolean elitism;
     private double crossoverProbability;
     private double mutationProbability;
-    private Integer maxProduction;
     Integer factoriesNumber;
     Integer servicePointsNumber;
+    Integer maxProduction;
 
     public GeneticAlgorithm(boolean elitism, Integer number,
-                            double crossProb, double mutationProb){
-    	factoriesNumber = 2;
-    	servicePointsNumber = 5;
-        this.chromosomes = generatePopulation(3);
+                            double crossProb, double mutationProb) {
+
         this.elitism = elitism;
         this.elitistNumber = number;
         this.crossoverProbability = crossProb;
@@ -33,45 +28,53 @@ public class GeneticAlgorithm extends Thread {
     }
 
     public void run() {
+        generatePopulation();
+        ArrayList<Chromosome> newGeneration = new ArrayList<Chromosome>();
 
-        
-        boolean required=true;
-
-        // while required to keep moving into next generations
-        while(required) {
-            ArrayList<Chromosome> newGeneration = chromosomes;
-            
-            //secures the best
-            if(elitism) {
-                for(int i=0;i<elitistNumber;i++) {
-                    newGeneration.add(mostAdapted());
-                }
-            }
-
-            // picking
-            ArrayList<Chromosome> elementsToCross = picking();
-
-            //doing crossover
-            ArrayList<Chromosome> afterCrossover = crossover(elementsToCross);
-
-            //adding the crossoved to the elitist
-            for(int i=0;i<afterCrossover.size();i++) {
-                newGeneration.add(afterCrossover.get(i));
-            }
-
-            //aplying mutation
-            ArrayList<Chromosome> afterMutation = mutation(newGeneration);
-
-
-            Partials.representSolution(afterMutation);
-            required = false;
-
+        if (elitism) {
+            newGeneration = mostAdapted(elitistNumber);
         }
 
+        System.out.println("size#"+chromosomes.size());
+
+        ArrayList<Chromosome> elementsToCross = picking();
+
+        for(int i=0;i<elementsToCross.size();i++ ) {
+            System.out.println(elementsToCross.get(i).getRepresentation());
+        }
+
+        //doing crossover
+        ArrayList<Chromosome> afterCrossover = crossover(elementsToCross);
+
+        System.out.println("Elistists: " + newGeneration);
+        for (int i = 0; i < newGeneration.size(); i++) {
+            System.out.println(i + ". " + newGeneration.get(i).getRepresentation());
+        }
+
+        System.out.println("After CrossOver: ");
+        for (int i = 0; i < afterCrossover.size(); i++) {
+            System.out.println(i + ". " + afterCrossover.get(i).getRepresentation());
+        }
+
+        //adding the crossoved to the elitist
+        for (int i = 0; i < afterCrossover.size(); i++) {
+            newGeneration.add(afterCrossover.get(i));
+        }
+
+        System.out.println("After Junction: ");
+        for (int i = 0; i < newGeneration.size(); i++) {
+            System.out.println(i + ". " + newGeneration.get(i).getRepresentation());
+        }
+
+        //applying mutation
+       // ArrayList<Chromosome> afterMutation = mutation(newGeneration);
+
+       // Partials.representSolution(afterMutation);
     }
 
     /**
      * Function that will pick the chromosomes to pass to the next generation
+     *
      * @return an array list of the passing chromosomes.
      */
     private ArrayList<Chromosome> picking() {
@@ -83,26 +86,34 @@ public class GeneticAlgorithm extends Thread {
             generalAdaptability += chromosomes.get(i).getAdaptability(maxProduction);
         }
 
-
-        for(int i = 0;i < chromosomes.size();i++) {
-            chromosomeAdaptability.add(chromosomes.get(i).getAdaptability(maxProduction)/generalAdaptability);
+        for (int i = 0; i < chromosomes.size(); i++) {
+            chromosomeAdaptability.add(chromosomes.get(i).getAdaptability(maxProduction) / generalAdaptability);
         }
 
-        for(int i = 1; i < chromosomes.size(); i++) {
+        for (int i = 1; i < chromosomes.size(); i++) {
             chromosomeAdaptability.set(i, chromosomeAdaptability.get(i) + chromosomeAdaptability.get(i - 1));
+        }
+
+        for(int i=0;i<chromosomeAdaptability.size();i++) {
+            System.out.println(chromosomeAdaptability.get(i));
         }
 
         // GENERATES A NUMBER BETWEEN 0-1 chromosomes.size() times.
 
         ArrayList<Double> randomNumbers = Partials.generateRandom(chromosomes.size());
+        for(int i=0;i<randomNumbers.size();i++) {
+            System.out.println("random #"+i+"="+randomNumbers.get(i));
+        }
+
         ArrayList<Chromosome> newOrder = new ArrayList<Chromosome>();
 
-        for(int i=0;i<randomNumbers.size();i++) {
+        for (int i = 0; i < randomNumbers.size(); i++) {
             double currentNumber = randomNumbers.get(i);
-            for(int j=0;j<chromosomeAdaptability.size();j++) {
-                if(currentNumber>chromosomeAdaptability.get(j)) {
+            for (int j = 0; j < chromosomeAdaptability.size(); j++) {
+                System.out.println("Current Random Number: " + currentNumber + ", Current Adaptability: " + chromosomeAdaptability.get(j));
+                if (currentNumber < chromosomeAdaptability.get(j)) {
                     newOrder.add(chromosomes.get(j));
-                    continue;
+                    break;
                 }
             }
         }
@@ -112,132 +123,159 @@ public class GeneticAlgorithm extends Thread {
 
     /**
      * Generates an initial population to start the problem
+     *
      * @return an array list of the current population
      */
 
-    private ArrayList<Chromosome> generatePopulation(Integer populationNumber){
-        ArrayList<Chromosome> population = new ArrayList<Chromosome>();
-        System.out.println("Starting to generate population");
+    private void generatePopulation() {
 
-        for(int x=0;x<populationNumber;x++) {
-            System.out.println("Start a specific chromosome");
-            
-            ArrayList<Factory> factories = new ArrayList<Factory>();
-            Random r = new Random();
-            for(int i=0;i<factoriesNumber;i++) {
-            	
-                Integer xCord = r.nextInt(10);
-                Integer yCord = r.nextInt(10);
-                Point coords = new Point(xCord,yCord);
-                Integer production = r.nextInt(maxProduction)+1;
+        Scanner in = new Scanner(System.in);
+        System.out.print("Number of factories #");
+        this.factoriesNumber = Integer.valueOf(in.nextLine());
 
-                Factory factory = new Factory("factory"+i,coords,production);
-                factories.add(factory);
+        ArrayList<Factory> factories = new ArrayList<Factory>();
+        for (int i = 0; i < factoriesNumber; i++) {
+            System.out.print("cord X from factory #" + i + ":");
+            Integer cordX = Integer.valueOf(in.nextLine());
+            System.out.print("cord Y from factory #" + i + ":");
+            Integer cordY = Integer.valueOf(in.nextLine());
+            Point cords = new Point(cordX, cordY);
+
+            System.out.print("Factory production of the current factory #");
+            Integer value = Integer.valueOf(in.nextLine());
+
+            Factory factory = new Factory("factory" + i, cords, value);
+            factories.add(factory);
+        }
+
+        Integer maxValue = 0;
+        for (int i = 0; i < factories.size(); i++) {
+            if (factories.get(i).getProduction() > maxValue) {
+                maxValue = factories.get(i).getProduction();
             }
-            
-            ArrayList<ServicePoint> servicePoints = new ArrayList<ServicePoint>();
-            
-            for(int i=0;i<servicePointsNumber;i++) {
-                Integer requiredProduction = r.nextInt(maxProduction);
-                Integer xCord = r.nextInt(10);
-                Integer yCord = r.nextInt(10);
-                Point coords = new Point(xCord,yCord);
+        }
+        String representation = Integer.toBinaryString(maxValue);
+        maxProduction = representation.length();
 
-                HashMap<Factory,Integer> prodReceived = new HashMap<Factory,Integer>();
-                for(int j=0;j<factories.size();j++) {
-                    prodReceived.put(
-                      factories.get(j), r.nextInt(factories.get(j).getProduction())
-                    );
+        System.out.print("Number of service points #");
+        this.servicePointsNumber = Integer.valueOf(in.nextLine());
+
+        ArrayList<ServicePoint> servicePoints = new ArrayList<ServicePoint>();
+        for (int i = 0; i < servicePointsNumber; i++) {
+            System.out.print("cord X from service point #" + i + ":");
+            Integer cordX = Integer.valueOf(in.nextLine());
+            System.out.print("cord Y from service point #" + i + ":");
+            Integer cordY = Integer.valueOf(in.nextLine());
+            Point cords = new Point(cordX, cordY);
+
+            System.out.print("Service point requirement of the current service point #");
+            Integer value = Integer.valueOf(in.nextLine());
+
+            ServicePoint servicePoint = new ServicePoint("service" + i, cords, value);
+            servicePoint.setFactories(factories);
+            servicePoints.add(servicePoint);
+        }
+
+        System.out.print("How many chromosome ?#");
+        Integer chromosomes = Integer.valueOf(in.nextLine());
+        Random r = new Random();
+        for (int i = 0; i < chromosomes; i++) {
+            for (int j = 0; j < servicePoints.size(); j++) {
+                HashMap<Factory, Integer> prod = new HashMap<Factory, Integer>();
+                for (int n = 0; n < factories.size(); n++) {
+                    prod.put(factories.get(n), r.nextInt(factories.get(n).getProduction()));
                 }
-
-                ServicePoint servicePoint = new ServicePoint("servicepoint"+i,coords,requiredProduction,prodReceived);
-                servicePoints.add(servicePoint);
+                servicePoints.get(j).setProdReceipts(prod);
             }
-
-            Chromosome chrom = new Chromosome(servicePoints);
-            chrom.createRepresentation();
-
-            System.out.println("Generated a chromosome with the representation of:");
-            System.out.println(chrom.getRepresentation());
-            System.out.println("____________________");
-
-            population.add(chrom);
+            Chromosome current = new Chromosome(servicePoints, maxProduction);
+            current.createRepresentation(maxProduction);
+            this.chromosomes.add(current);
         }
 
-        System.out.println("\nFinal generation");
-        for(int i=0;i<population.size();i++){
-            System.out.println(population.get(i).getRepresentation());
+        for (int i = 0; i < this.chromosomes.size(); i++) {
+            System.out.println(this.chromosomes.get(i).getRepresentation() + " -> " + this.chromosomes.get(i).getAdaptability(maxProduction));
         }
-        return population;
-    }
 
-    private int getMaxProduction(Integer bitsRequired) {
-        int maxValue=0;
-        for(int i=0;i<bitsRequired;i++) 
-        	maxValue += Math.pow(2, i);
-        return maxValue;
     }
 
     /**
      * Cross the chosen chromosomes
+     *
      * @param chromosomes
      * @return the current crossoved population
      */
     private ArrayList<Chromosome> crossover(ArrayList<Chromosome> chromosomes) {
 
         ArrayList<Chromosome> chromosomesClone = new ArrayList<Chromosome>();
-        for(int i=0;i<chromosomes.size();i++) {
+        for (int i = 0; i < chromosomes.size(); i++) {
             chromosomesClone.add(chromosomes.get(i));
         }
 
         ArrayList<Double> randomNumbers = Partials.generateRandom(chromosomes.size());
 
+        System.out.println("MR Random: " + randomNumbers);
+
         ArrayList<Chromosome> toCross = new ArrayList<Chromosome>();
 
-        for(int i=0;i<randomNumbers.size();i++){
-            if(randomNumbers.get(i)<this.crossoverProbability) {
+        for (int i = 0; i < randomNumbers.size(); i++) {
+            if (randomNumbers.get(i) < this.crossoverProbability) {
                 toCross.add(chromosomes.get(i));
                 chromosomesClone.remove(chromosomes.get(i));
             }
         }
 
-        for(int i=1;i<toCross.size();i+=+2) {
-                // adiciona os elementos cruzados 2 a 2
-            ArrayList<Chromosome> crossed = officialCrossover(toCross.get(i),toCross.get(i-1));
-            for(int j=0;j<crossed.size();j++) {
+        for (int i = 0; i < chromosomesClone.size(); i++) {
+            System.out.println(i + " chromosomesClone: " + chromosomesClone.get(i).getRepresentation());
+        }
+
+        for (int i = 0; i < toCross.size(); i++) {
+            System.out.println(i + " To cross: " + toCross.get(i).getRepresentation());
+        }
+
+        Random r = new Random();
+        Integer crossBit = r.nextInt(chromosomes.get(0).getRepresentation().length() - 1) + 1;
+        for (int i = 1; i < toCross.size(); i += +2) {
+            // adiciona os elementos cruzados 2 a 2
+            ArrayList<Chromosome> crossed = officialCrossover(toCross.get(i), toCross.get(i - 1), crossBit);
+            for (int j = 0; j < crossed.size(); j++) {
                 chromosomesClone.add(crossed.get(j));
             }
 
             // adiciona o ultimo elemento caso seja impar
-            
-            if(toCross.get(i+2) == null && toCross.get(i+1) != null) {
-                chromosomesClone.add(toCross.get(i+1));
+
+            try {
+                if (toCross.get(i + 2) == null) {
+                    chromosomesClone.add(toCross.get(i + 1));
+                    System.out.println("ES HERE");
+                }
+            } catch(IndexOutOfBoundsException e) {
+                System.out.println("NO ES HERE");
             }
         }
-
         return chromosomesClone;
     }
 
     /**
      * Crosses two chromosomes
+     *
      * @param chrom1
      * @param chrom2
      * @return
      */
-    private ArrayList<Chromosome> officialCrossover(Chromosome chrom1, Chromosome chrom2) {
+    private ArrayList<Chromosome> officialCrossover(Chromosome chrom1, Chromosome chrom2, Integer crossBit) {
         String representation1 = chrom1.getRepresentation();
         String representation2 = chrom2.getRepresentation();
 
-        Random r = new Random();
-        Integer crossBit = r.nextInt(representation1.length());
 
-        String tempRep1FirstHalf,tempRep1SecondHalf;
-        tempRep1FirstHalf = representation1.substring(0,crossBit);
-        tempRep1SecondHalf = representation1.substring(crossBit,representation1.length());
+        System.out.println("Random n: " + crossBit.intValue());
 
-        String tempRep2FirstHalf,tempRep2SecondHalf;
-        tempRep2FirstHalf = representation2.substring(0,crossBit);
-        tempRep2SecondHalf = representation2.substring(crossBit,representation1.length());
+        String tempRep1FirstHalf, tempRep1SecondHalf;
+        tempRep1FirstHalf = representation1.substring(0, crossBit);
+        tempRep1SecondHalf = representation1.substring(crossBit, representation1.length());
+
+        String tempRep2FirstHalf, tempRep2SecondHalf;
+        tempRep2FirstHalf = representation2.substring(0, crossBit);
+        tempRep2SecondHalf = representation2.substring(crossBit, representation1.length());
 
         String finalRep1, finalRep2;
 
@@ -248,15 +286,17 @@ public class GeneticAlgorithm extends Thread {
         chrom2.setRepresentation(finalRep2);
 
         ArrayList<Chromosome> crossed = new ArrayList<Chromosome>();
-        crossed.add(chrom1);crossed.add(chrom2);
+        crossed.add(chrom1);
+        crossed.add(chrom2);
 
         return crossed;
     }
 
     /**
      * generates a random mutation in order to improve the general population
-     * @return the current mutated population
+     *
      * @param newGeneration
+     * @return the current mutated population
      */
     private ArrayList<Chromosome> mutation(ArrayList<Chromosome> newGeneration) {
         return new ArrayList<Chromosome>();
@@ -264,28 +304,34 @@ public class GeneticAlgorithm extends Thread {
 
     /**
      * Returns the most adapted chromosome of the current population
+     *
      * @return
      */
-    private Chromosome mostAdapted() {
-    	/*				TESTE
-    	if (chromosomes.size() == 0) {
-    		return null;
-    	}*/
-        Chromosome temp=chromosomes.get(0);
-        for(int i=1;i<chromosomes.size();i++) {
-            if(temp.getAdaptability(maxProduction)<chromosomes.get(i).getAdaptability(maxProduction)) {
-                temp = chromosomes.get(i);
-            }
+    private ArrayList<Chromosome> mostAdapted(Integer elitistNumber) {
+
+        ArrayList<Chromosome> tempChrom= new ArrayList<Chromosome>();
+        for(int i=0;i<this.chromosomes.size();i++) {
+            Chromosome temp = this.chromosomes.get(i);
+            tempChrom.add(temp);
         }
-        chromosomes.remove(temp);
-        return temp;
+
+        for(int i=0;i<elitistNumber;i++) {
+            Chromosome temp = tempChrom.get(0);
+            for (int j = 1; j < tempChrom.size(); j++) {
+                if (temp.getAdaptability(maxProduction) <= tempChrom.get(j).getAdaptability(maxProduction)) {
+                    temp = tempChrom.get(j);
+                }
+            }
+            tempChrom.remove(temp);
+        }
+        return tempChrom;
     }
 
 
     public double getGenerationAdaptability(ArrayList<Chromosome> currentGeneration) {
-        double adapt=0;
-        for(int i=0;i<currentGeneration.size();i++) {
-            adapt+=currentGeneration.get(i).getAdaptability(maxProduction);
+        double adapt = 0;
+        for (int i = 0; i < currentGeneration.size(); i++) {
+            adapt += currentGeneration.get(i).getAdaptability(maxProduction);
         }
         return adapt;
     }
