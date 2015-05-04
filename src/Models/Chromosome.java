@@ -1,5 +1,6 @@
 package Models;
 
+import java.awt.font.NumericShaper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,25 +38,19 @@ public class Chromosome {
 	/**
 	 * @return the adaptability of this chromosome
 	 */
-	public double getAdaptability(Integer maxRepresentation) {
+	public double getAdaptability(int maxRepresentation) {
+		int numberOfServicePoints = servicePoints.size();
 		double adapt = 0;
-		
-		
-		
-		/*
-		for(int i = 0; i < servicePoints.size(); i++) {
-			HashMap factories = servicePoints.get(i).getProdReceipts();
-			Iterator it = (Iterator) factories.entrySet().iterator();
-			while (it.hasNext()) {
-				Map.Entry pair = (Map.Entry) it.next();
-				adapt += (double) ((Integer) pair.getValue()).intValue();
+		String servicePointString;
+		String factoryString;
+		for (int i = 0; i < numberOfServicePoints; i++) {
+			servicePointString = (this.representation).substring(i*numberOfServicePoints,(i+1)*numberOfServicePoints);
+			for (int j = 0; j < maxRepresentation; j++) {
+				factoryString = servicePointString.substring(j*maxRepresentation, (j+1)*maxRepresentation);
+				adapt += binaryToInteger(factoryString);
 			}
 			adapt -= servicePoints.get(i).getRequired();
 		}
-		//System.out.println("\nBefore Pen: "  + adapt);
-		//System.out.println("Pen: " + getPenalization());
-		adapt -= getPenalization();
-		//System.out.println("Adaptation: "  + adapt);*/
 		return adapt;
 	}
 
@@ -84,4 +79,17 @@ public class Chromosome {
 	public void setRepresentation(String representation) {
 		this.representation = representation;
 	}
+	
+	public int binaryToInteger(String binary) {
+	    char[] numbers = binary.toCharArray();
+	    int result = 0;
+	    for (int i=numbers.length; i==0; i--) {
+	        if (numbers[i]=='1') {
+	          result += (numbers.length-i+1)*2;
+	        }
+	    }
+	    return result;
+	}
 }
+
+
