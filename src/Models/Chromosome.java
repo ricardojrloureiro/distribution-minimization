@@ -37,9 +37,12 @@ public class Chromosome {
 	/**
 	 * @return the adaptability of this chromosome
 	 */
-	public double getAdaptability() {
+	public double getAdaptability(Integer maxRepresentation) {
 		double adapt = 0;
-
+		
+		
+		
+		/*
 		for(int i = 0; i < servicePoints.size(); i++) {
 			HashMap factories = servicePoints.get(i).getProdReceipts();
 			Iterator it = (Iterator) factories.entrySet().iterator();
@@ -49,10 +52,10 @@ public class Chromosome {
 			}
 			adapt -= servicePoints.get(i).getRequired();
 		}
-		System.out.println("\nBefore Pen: "  + adapt);
-		System.out.println("Pen: " + getPenalization());
+		//System.out.println("\nBefore Pen: "  + adapt);
+		//System.out.println("Pen: " + getPenalization());
 		adapt -= getPenalization();
-		System.out.println("Adaptation: "  + adapt);
+		//System.out.println("Adaptation: "  + adapt);*/
 		return adapt;
 	}
 

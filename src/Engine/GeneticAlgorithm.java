@@ -17,10 +17,15 @@ public class GeneticAlgorithm extends Thread {
     private Boolean elitism;
     private double crossoverProbability;
     private double mutationProbability;
+    private Integer maxProduction;
+    Integer factoriesNumber;
+    Integer servicePointsNumber;
 
     public GeneticAlgorithm(boolean elitism, Integer number,
                             double crossProb, double mutationProb){
-        this.chromosomes = generatePopulation(2,5,5,3);
+    	factoriesNumber = 2;
+    	servicePointsNumber = 5;
+        this.chromosomes = generatePopulation(3);
         this.elitism = elitism;
         this.elitistNumber = number;
         this.crossoverProbability = crossProb;
@@ -75,12 +80,12 @@ public class GeneticAlgorithm extends Thread {
         ArrayList<Double> chromosomeAdaptability = new ArrayList<Double>();
 
         for (int i = 0; i < chromosomes.size(); i++) {
-            generalAdaptability += chromosomes.get(i).getAdaptability();
+            generalAdaptability += chromosomes.get(i).getAdaptability(maxProduction);
         }
 
 
         for(int i = 0;i < chromosomes.size();i++) {
-            chromosomeAdaptability.add(chromosomes.get(i).getAdaptability()/generalAdaptability);
+            chromosomeAdaptability.add(chromosomes.get(i).getAdaptability(maxProduction)/generalAdaptability);
         }
 
         for(int i = 1; i < chromosomes.size(); i++) {
@@ -110,24 +115,17 @@ public class GeneticAlgorithm extends Thread {
      * @return an array list of the current population
      */
 
-    private ArrayList<Chromosome> generatePopulation(Integer factoriesNumber, Integer servicePointsNumber,
-                                                     Integer bitsRequired,Integer populationNumber){
+    private ArrayList<Chromosome> generatePopulation(Integer populationNumber){
         ArrayList<Chromosome> population = new ArrayList<Chromosome>();
         System.out.println("Starting to generate population");
 
-        Integer maxProduction = getMaxProduction(bitsRequired);
-        System.out.println("Population max Production #" + maxProduction);
-        System.out.println("_______________________________");
-        System.out.println("\n\n");
-
         for(int x=0;x<populationNumber;x++) {
             System.out.println("Start a specific chromosome");
-
-
+            
             ArrayList<Factory> factories = new ArrayList<Factory>();
             Random r = new Random();
             for(int i=0;i<factoriesNumber;i++) {
-
+            	
                 Integer xCord = r.nextInt(10);
                 Integer yCord = r.nextInt(10);
                 Point coords = new Point(xCord,yCord);
@@ -136,7 +134,9 @@ public class GeneticAlgorithm extends Thread {
                 Factory factory = new Factory("factory"+i,coords,production);
                 factories.add(factory);
             }
+            
             ArrayList<ServicePoint> servicePoints = new ArrayList<ServicePoint>();
+            
             for(int i=0;i<servicePointsNumber;i++) {
                 Integer requiredProduction = r.nextInt(maxProduction);
                 Integer xCord = r.nextInt(10);
@@ -209,10 +209,10 @@ public class GeneticAlgorithm extends Thread {
             }
 
             // adiciona o ultimo elemento caso seja impar
-            /*
-            if(toCross.get(i+2)==null) {
+            
+            if(toCross.get(i+2) == null && toCross.get(i+1) != null) {
                 chromosomesClone.add(toCross.get(i+1));
-            }*/
+            }
         }
 
         return chromosomesClone;
@@ -273,7 +273,7 @@ public class GeneticAlgorithm extends Thread {
     	}*/
         Chromosome temp=chromosomes.get(0);
         for(int i=1;i<chromosomes.size();i++) {
-            if(temp.getAdaptability()<chromosomes.get(i).getAdaptability()) {
+            if(temp.getAdaptability(maxProduction)<chromosomes.get(i).getAdaptability(maxProduction)) {
                 temp = chromosomes.get(i);
             }
         }
@@ -285,7 +285,7 @@ public class GeneticAlgorithm extends Thread {
     public double getGenerationAdaptability(ArrayList<Chromosome> currentGeneration) {
         double adapt=0;
         for(int i=0;i<currentGeneration.size();i++) {
-            adapt+=currentGeneration.get(i).getAdaptability();
+            adapt+=currentGeneration.get(i).getAdaptability(maxProduction);
         }
         return adapt;
     }
