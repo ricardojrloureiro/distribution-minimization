@@ -1,6 +1,8 @@
 package Engine;
 
 import Models.Chromosome;
+import Models.Factory;
+import Models.ServicePoint;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -12,9 +14,11 @@ public class Partials {
         return Math.sqrt(Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
     }
 
-    public static void representSolution(ArrayList<Chromosome> solution) {
-        System.out.println("Melo rocks");
-
+    public static void representSolution(ArrayList<Chromosome> solution, ArrayList<Factory> factories, ArrayList<ServicePoint> servicePoints) {
+        for (int i = 0; i < solution.size(); i++) {
+        	System.out.println("\n\nSolution #" + i + ":");
+        	solution.get(i).printFactories(factories.size(), servicePoints.size());
+        }
     }
 
     public static ArrayList<Double> generateRandom(int size) {

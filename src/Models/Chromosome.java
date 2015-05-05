@@ -81,7 +81,7 @@ public class Chromosome {
 				}
 			}
 		}
-		
+
 		if (!mrBoolean) {
 			return 1 - 1/penalty;
 		} else if (penalty == 0) {
@@ -105,6 +105,23 @@ public class Chromosome {
 		}
 		return result;
 	}
+
+	public void printFactories(int numFactories, int numServicePoints) {
+		int servicePoint = (this.getRepresentation().length())/numServicePoints;
+		int factory = servicePoint/numFactories;
+		for(int j = 0; j<numServicePoints; j++) {
+			String tempString1 = this.getRepresentation().substring(j*servicePoint, (j+1)*servicePoint);
+			System.out.println("  Service Point #" + j + " receives:");
+			for (int i = 0; i < numFactories; i++) {
+				String tempString2 = this.getRepresentation().substring(i*factory, (i+1)*factory);
+				if (binaryToInteger(this.getRepresentation()) > 0) {
+					System.out.println("  From Factory #" + i + ": " + binaryToInteger(tempString2));
+				}
+			}
+		}
+	}
+
+
 }
 
 

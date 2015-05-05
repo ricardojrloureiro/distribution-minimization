@@ -17,6 +17,8 @@ public class GeneticAlgorithm extends Thread {
 	Integer factoriesNumber;
 	Integer servicePointsNumber;
 	Integer maxProduction;
+	ArrayList<Factory> factories;
+	ArrayList<ServicePoint> servicePoints;
 
 	public GeneticAlgorithm(boolean elitism, Integer number,
 			double crossProb, double mutationProb) {
@@ -74,7 +76,7 @@ public class GeneticAlgorithm extends Thread {
 			System.out.println(i + ". " + afterMutation.get(i).getRepresentation() + "->"+ afterMutation.get(i).getAdaptability(maxProduction));
 		}
 
-		// Partials.representSolution(afterMutation);
+		Partials.representSolution(afterMutation, factories, servicePoints);
 	}
 
 	/**
@@ -129,7 +131,7 @@ public class GeneticAlgorithm extends Thread {
 		System.out.print("Number of factories #");
 		this.factoriesNumber = Integer.valueOf(in.nextLine());
 
-		ArrayList<Factory> factories = new ArrayList<Factory>();
+		factories = new ArrayList<Factory>();
 		for (int i = 0; i < factoriesNumber; i++) {
 			System.out.print("cord X from factory #" + i + ":");
 			Integer cordX = Integer.valueOf(in.nextLine());
@@ -156,7 +158,7 @@ public class GeneticAlgorithm extends Thread {
 		System.out.print("Number of service points #");
 		this.servicePointsNumber = Integer.valueOf(in.nextLine());
 
-		ArrayList<ServicePoint> servicePoints = new ArrayList<ServicePoint>();
+		servicePoints = new ArrayList<ServicePoint>();
 		for (int i = 0; i < servicePointsNumber; i++) {
 			System.out.print("cord X from service point #" + i + ":");
 			Integer cordX = Integer.valueOf(in.nextLine());
@@ -217,9 +219,6 @@ public class GeneticAlgorithm extends Thread {
 				chromosomesClone.remove(chromosomes.get(i));
 			}
 		}
-
-		Random r = new Random();
-		Integer crossBit = r.nextInt(chromosomes.get(0).getRepresentation().length() - 1) + 1;
 		try {
 			if (toCross.get(0) == null) {
 				return chromosomesClone;
@@ -241,7 +240,7 @@ public class GeneticAlgorithm extends Thread {
 
 		for (int i = 1; i < toCross.size(); i += +2) {
 			// adiciona os elementos cruzados 2 a 2
-			ArrayList<Chromosome> crossed = officialCrossover(toCross.get(i), toCross.get(i - 1), crossBit);
+			ArrayList<Chromosome> crossed = officialCrossover(toCross.get(i), toCross.get(i - 1));
 			for (int j = 0; j < crossed.size(); j++) {
 				chromosomesClone.add(crossed.get(j));
 			}
@@ -266,7 +265,9 @@ public class GeneticAlgorithm extends Thread {
 	 * @param chrom2
 	 * @return
 	 */
-	private ArrayList<Chromosome> officialCrossover(Chromosome chrom1, Chromosome chrom2, Integer crossBit) {
+	private ArrayList<Chromosome> officialCrossover(Chromosome chrom1, Chromosome chrom2) {
+		Random r = new Random();
+		Integer crossBit = r.nextInt(chromosomes.get(0).getRepresentation().length() - 1) + 1;
 		String representation1 = chrom1.getRepresentation();
 		String representation2 = chrom2.getRepresentation();
 
