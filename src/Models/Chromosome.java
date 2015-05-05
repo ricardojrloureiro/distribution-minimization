@@ -69,6 +69,7 @@ public class Chromosome {
 		String factoryString;
 		int numberOfServicePoints = servicePoints.size();
 		Boolean mrBoolean = false;
+		double penalty = getPenalization(maxRepresentation);
 
 		for (int i = 0; i < numberOfServicePoints; i++) {
 			servicePointString = (this.representation).substring(i * (servicePoints.get(i).getFactories().size() * maxRepresentation), (i + 1) * (servicePoints.get(i).getFactories().size() * maxRepresentation));
@@ -80,10 +81,13 @@ public class Chromosome {
 				}
 			}
 		}
+		
 		if (!mrBoolean) {
-			Math.pow(1 - 1/getPenalization(maxRepresentation), 2);
+			return 1 - 1/penalty;
+		} else if (penalty == 0) {
+			return Math.pow(1/distance, 2);
 		}
-		return Math.pow(distance - 1/getPenalization(maxRepresentation),2);
+		return Math.pow(1/distance + 1/penalty,2);
 	}
 
 
