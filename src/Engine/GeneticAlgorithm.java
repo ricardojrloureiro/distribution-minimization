@@ -67,7 +67,11 @@ public class GeneticAlgorithm extends Thread {
         }
 
         //applying mutation
-       // ArrayList<Chromosome> afterMutation = mutation(newGeneration);
+         ArrayList<Chromosome> afterMutation = mutation(newGeneration);
+        System.out.println("After Mutation: ");
+        for (int i = 0; i < afterMutation.size(); i++) {
+            System.out.println(i + ". " + afterMutation.get(i).getRepresentation());
+        }
 
        // Partials.representSolution(afterMutation);
     }
@@ -93,24 +97,15 @@ public class GeneticAlgorithm extends Thread {
         for (int i = 1; i < chromosomes.size(); i++) {
             chromosomeAdaptability.set(i, chromosomeAdaptability.get(i) + chromosomeAdaptability.get(i - 1));
         }
-
-        for(int i=0;i<chromosomeAdaptability.size();i++) {
-            System.out.println(chromosomeAdaptability.get(i));
-        }
-
         // GENERATES A NUMBER BETWEEN 0-1 chromosomes.size() times.
 
-        ArrayList<Double> randomNumbers = Partials.generateRandom(chromosomes.size());
-        for(int i=0;i<randomNumbers.size();i++) {
-            System.out.println("random #"+i+"="+randomNumbers.get(i));
-        }
+        ArrayList<Double> randomNumbers = Partials.generateRandom(chromosomes.size() - elitistNumber);
 
         ArrayList<Chromosome> newOrder = new ArrayList<Chromosome>();
 
         for (int i = 0; i < randomNumbers.size(); i++) {
             double currentNumber = randomNumbers.get(i);
             for (int j = 0; j < chromosomeAdaptability.size(); j++) {
-                System.out.println("Current Random Number: " + currentNumber + ", Current Adaptability: " + chromosomeAdaptability.get(j));
                 if (currentNumber < chromosomeAdaptability.get(j)) {
                     newOrder.add(chromosomes.get(j));
                     break;
@@ -299,7 +294,21 @@ public class GeneticAlgorithm extends Thread {
      * @return the current mutated population
      */
     private ArrayList<Chromosome> mutation(ArrayList<Chromosome> newGeneration) {
-        return new ArrayList<Chromosome>();
+        Random rand = new Random();
+        ArrayList<Double> mutationProb = new ArrayList<Double>();
+        mutationProb = Partials.generateRandom(newGeneration.size() * newGeneration.get(0).getRepresentation().length());
+
+        for(int i = 0; i < newGeneration.size(); i++) {
+            for (int j = 0; j < newGeneration.get(i).getRepresentation().length(); j++) {
+                if (mutationProb.get(((i*newGeneration.get(i).getRepresentation().length())+j)) < mutationProbability) {
+                    String newRepresentation = newGeneration.get(i).getRepresentation().substring(0, j) +
+                            (newGeneration.get(i).getRepresentation().charAt(j)+1)%2 +
+                            newGeneration.get(i).getRepresentation().substring(j+1, newGeneration.get(i).getRepresentation().length());
+                    newGeneration.get(i).setRepresentation(newRepresentation);
+                }
+            }
+        }
+        return newGeneration;
     }
 
     /**
@@ -309,30 +318,23 @@ public class GeneticAlgorithm extends Thread {
      */
     private ArrayList<Chromosome> mostAdapted(Integer elitistNumber) {
 
-        ArrayList<Chromosome> tempChrom= new ArrayList<Chromosome>();
+        ArrayList<Chromosome> tempChromosomes= new ArrayList<Chromosome>();
+        ArrayList<Chromosome> elitChromosomes= new ArrayList<Chromosome>();
+
         for(int i=0;i<this.chromosomes.size();i++) {
-            Chromosome temp = this.chromosomes.get(i);
-            tempChrom.add(temp);
+            tempChromosomes.add(this.chromosomes.get(i));
         }
 
         for(int i=0;i<elitistNumber;i++) {
-            Chromosome temp = tempChrom.get(0);
-            for (int j = 1; j < tempChrom.size(); j++) {
-                if (temp.getAdaptability(maxProduction) <= tempChrom.get(j).getAdaptability(maxProduction)) {
-                    temp = tempChrom.get(j);
+            Chromosome temp = tempChromosomes.get(0);
+            for (int j = 1; j < tempChromosomes.size(); j++) {
+                if (temp.getAdaptability(maxProduction) <= tempChromosomes.get(j).getAdaptability(maxProduction)) {
+                    temp = tempChromosomes.get(j);
                 }
             }
-            tempChrom.remove(temp);
+            tempChromosomes.remove(temp);
+            elitChromosomes.add(temp);
         }
-        return tempChrom;
-    }
-
-
-    public double getGenerationAdaptability(ArrayList<Chromosome> currentGeneration) {
-        double adapt = 0;
-        for (int i = 0; i < currentGeneration.size(); i++) {
-            adapt += currentGeneration.get(i).getAdaptability(maxProduction);
-        }
-        return adapt;
+        return elitChromosomes;
     }
 }
