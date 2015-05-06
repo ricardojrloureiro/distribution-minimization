@@ -11,11 +11,21 @@ public class Chromosome {
 
 	private ArrayList<ServicePoint> servicePoints;
 	private String representation;
+	private Integer maxProduction;
 
 	public Chromosome(ArrayList<ServicePoint> serv, Integer maxProduction) {
 
 		this.servicePoints = serv;
 		representation = createRepresentation(maxProduction);
+		this.maxProduction = maxProduction;
+	}
+
+	public Integer getMaxProduction() {
+		return maxProduction;
+	}
+
+	public ArrayList<ServicePoint> getServicePoints() {
+		return servicePoints;
 	}
 
 	/**
@@ -106,16 +116,16 @@ public class Chromosome {
 		return result;
 	}
 
-	public void printFactories(int numFactories, int numServicePoints) {
+	public void printFactories(int numFactories, int numServicePoints, ArrayList<Factory> factories) {
 		int servicePoint = (this.getRepresentation().length())/numServicePoints;
 		int factory = servicePoint/numFactories;
 		for(int j = 0; j<numServicePoints; j++) {
 			String tempString1 = this.getRepresentation().substring(j*servicePoint, (j+1)*servicePoint);
-			System.out.println("  Service Point #" + j + " receives:");
+			System.out.println("  Service Point #" + j + ":");
 			for (int i = 0; i < numFactories; i++) {
 				String tempString2 = this.getRepresentation().substring(i*factory, (i+1)*factory);
 				if (binaryToInteger(this.getRepresentation()) > 0) {
-					System.out.println("  From Factory #" + i + ": " + binaryToInteger(tempString2));
+					System.out.println("  Factory #" + i + ": " + "Position [" + factories.get(i).getPosition().getX() + ", " + factories.get(i).getPosition().getY() + "], sends: " + binaryToInteger(tempString2));
 				}
 			}
 		}

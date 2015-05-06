@@ -30,53 +30,56 @@ public class GeneticAlgorithm extends Thread {
 	}
 
 	public void run() {
+
 		generatePopulation();
-		ArrayList<Chromosome> newGeneration = new ArrayList<Chromosome>();
+		for (int n = 0; n < 5; n++) {
+			ArrayList<Chromosome> newGeneration = new ArrayList<Chromosome>();
 
-		System.out.println("Initial: ");
-		for (int i = 0; i < chromosomes.size(); i++) {
-			System.out.println(i + ". " + chromosomes.get(i).getRepresentation() + "->" + chromosomes.get(i).getAdaptability(maxProduction));
-		}
-
-		if (elitism) {
-			newGeneration = mostAdapted(elitistNumber);
-		}
-
-		ArrayList<Chromosome> elementsToCross = picking();
-
-		System.out.println("Before Cross: ");
-		for (int i = 0; i < elementsToCross.size(); i++) {
-			System.out.println(i + ". " + elementsToCross.get(i).getRepresentation() + "->"+ elementsToCross.get(i).getAdaptability(maxProduction));
-		}
-
-		//doing crossover
-		if (elementsToCross.size() != 0) {
-			ArrayList<Chromosome> afterCrossover = crossover(elementsToCross);
-			
-			System.out.println("After Cross: ");
-			for (int i = 0; i < afterCrossover.size(); i++) {
-				System.out.println(i + ". " + afterCrossover.get(i).getRepresentation() + "->"+ afterCrossover.get(i).getAdaptability(maxProduction));
+			System.out.println("Initial: ");
+			for (int i = 0; i < chromosomes.size(); i++) {
+				System.out.println(i + ". " + chromosomes.get(i).getRepresentation() + "->" + chromosomes.get(i).getAdaptability(maxProduction));
 			}
-			//adding the crossoved to the elitist
-			for (int i = 0; i < afterCrossover.size(); i++) {
-				newGeneration.add(afterCrossover.get(i));
+
+			if (elitism) {
+				newGeneration = mostAdapted(elitistNumber);
 			}
-		}	
 
-		System.out.println("\n Before Mutation: ");
-		for (int i = 0; i < newGeneration.size(); i++) {
-			System.out.println(i + ". " + newGeneration.get(i).getRepresentation() + "->"+ newGeneration.get(i).getAdaptability(maxProduction));
+			ArrayList<Chromosome> elementsToCross = picking();
+
+			System.out.println("Before Cross: ");
+			for (int i = 0; i < elementsToCross.size(); i++) {
+				System.out.println(i + ". " + elementsToCross.get(i).getRepresentation() + "->"+ elementsToCross.get(i).getAdaptability(maxProduction));
+			}
+
+			//doing crossover
+			if (elementsToCross.size() != 0) {
+				ArrayList<Chromosome> afterCrossover = crossover(elementsToCross);
+
+				System.out.println("After Cross: ");
+				for (int i = 0; i < afterCrossover.size(); i++) {
+					System.out.println(i + ". " + afterCrossover.get(i).getRepresentation() + "->"+ afterCrossover.get(i).getAdaptability(maxProduction));
+				}
+				//adding the crossoved to the elitist
+				for (int i = 0; i < afterCrossover.size(); i++) {
+					newGeneration.add(afterCrossover.get(i));
+				}
+			}	
+
+			System.out.println("\n Before Mutation: ");
+			for (int i = 0; i < newGeneration.size(); i++) {
+				System.out.println(i + ". " + newGeneration.get(i).getRepresentation() + "->"+ newGeneration.get(i).getAdaptability(maxProduction));
+			}
+
+			//applying mutation
+			ArrayList<Chromosome> afterMutation = mutation(newGeneration);
+
+			System.out.println("After Mutation: ");
+			for (int i = 0; i < afterMutation.size(); i++) {
+				System.out.println(i + ". " + afterMutation.get(i).getRepresentation() + "->"+ afterMutation.get(i).getAdaptability(maxProduction));
+			}
+
+			Partials.representSolution(afterMutation, factories, servicePoints, maxProduction);
 		}
-
-		//applying mutation
-		ArrayList<Chromosome> afterMutation = mutation(newGeneration);
-
-		System.out.println("After Mutation: ");
-		for (int i = 0; i < afterMutation.size(); i++) {
-			System.out.println(i + ". " + afterMutation.get(i).getRepresentation() + "->"+ afterMutation.get(i).getAdaptability(maxProduction));
-		}
-
-		Partials.representSolution(afterMutation, factories, servicePoints);
 	}
 
 	/**
@@ -219,42 +222,22 @@ public class GeneticAlgorithm extends Thread {
 				chromosomesClone.remove(chromosomes.get(i));
 			}
 		}
-		try {
-			if (toCross.get(0) == null) {
-				return chromosomesClone;
-			} 
-		} catch (IndexOutOfBoundsException e) {
-			return chromosomesClone;
-		}
 
-		try {
-			if (toCross.get(1) == null) {
+		for (int i = 0; i < toCross.size(); ) {
+			if (toCross.size() == 1) {
 				chromosomesClone.add(toCross.get(0));
-				return chromosomesClone;
-			}
-		} catch(IndexOutOfBoundsException e) {
-			chromosomesClone.add(toCross.get(0));
-			return chromosomesClone;
-		}
-
-
-		for (int i = 1; i < toCross.size(); i += +2) {
-			// adiciona os elementos cruzados 2 a 2
-			ArrayList<Chromosome> crossed = officialCrossover(toCross.get(i), toCross.get(i - 1));
-			for (int j = 0; j < crossed.size(); j++) {
-				chromosomesClone.add(crossed.get(j));
-			}
-
-			// adiciona o ultimo elemento caso seja impar
-
-			try {
-				if (toCross.get(i + 2) == null) {
-					chromosomesClone.add(toCross.get(i + 1));
+				toCross.remove(0);
+			} else {
+				//se houver 2 para cruzar
+				ArrayList<Chromosome> crossed = officialCrossover(toCross.get(i), toCross.get(i + 1));
+				for (int j = 0; j < crossed.size(); j++) {
+					chromosomesClone.add(crossed.get(j));
 				}
-			} catch(IndexOutOfBoundsException e) {
-				System.out.println("NO ES HERE");
+				toCross.remove(0);
+				toCross.remove(0);
 			}
 		}
+
 		return chromosomesClone;
 	}
 
@@ -310,14 +293,13 @@ public class GeneticAlgorithm extends Thread {
 		mutationProb = Partials.generateRandom(newGeneration.size() * newGeneration.get(0).getRepresentation().length());
 
 		for(int i = 0; i < newGeneration.size(); i++) {
-			afterMutation.add(newGeneration.get(i));
-			for (int j = 0; j < newGeneration.get(i).getRepresentation().length(); j++) {
-				if (mutationProb.get(((i*newGeneration.get(i).getRepresentation().length())+j)) < mutationProbability) {
-					System.out.println("Representação inicial: " + newGeneration.get(i).getRepresentation());
-					String newRepresentation = newGeneration.get(i).getRepresentation().substring(0, j) +
-							(newGeneration.get(i).getRepresentation().charAt(j)+1)%2 +
-							newGeneration.get(i).getRepresentation().substring(j+1, newGeneration.get(i).getRepresentation().length());
-					System.out.println("Bite " + j + "mudou ->" + newRepresentation);
+			Chromosome tempChrom = new Chromosome(newGeneration.get(i).getServicePoints(), newGeneration.get(i).getMaxProduction());
+			afterMutation.add(tempChrom);
+			for (int j = 0; j < afterMutation.get(i).getRepresentation().length(); j++) {
+				if (mutationProb.get(((i*afterMutation.get(i).getRepresentation().length()) + j)) < mutationProbability) {
+					System.out.println("Representação inicial: " + afterMutation.get(i).getRepresentation());
+					String newRepresentation = afterMutation.get(i).getRepresentation().substring(0, j) + (afterMutation.get(i).getRepresentation().charAt(j)+1)%2 +afterMutation.get(i).getRepresentation().substring(j+1, afterMutation.get(i).getRepresentation().length());
+					System.out.println(i + ". Bite " + j + "mudou ->" + newRepresentation);
 					afterMutation.get(i).setRepresentation(newRepresentation);
 				}
 			}

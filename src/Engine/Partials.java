@@ -14,11 +14,21 @@ public class Partials {
         return Math.sqrt(Math.pow(p1.getX() - p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
     }
 
-    public static void representSolution(ArrayList<Chromosome> solution, ArrayList<Factory> factories, ArrayList<ServicePoint> servicePoints) {
+    public static void representSolution(ArrayList<Chromosome> solution, ArrayList<Factory> factories, ArrayList<ServicePoint> servicePoints, int maxRepresentation) {
         for (int i = 0; i < solution.size(); i++) {
-        	System.out.println("\n\nSolution #" + i + ":");
-        	solution.get(i).printFactories(factories.size(), servicePoints.size());
+        	System.out.println("\nSolution #" + i + ":");
+        	solution.get(i).printFactories(factories.size(), servicePoints.size(), factories);
         }
+        Chromosome temp = solution.get(0);
+        int mostAdapted = 0;
+        for (int i = 1; i < solution.size(); i++) {
+        	if (solution.get(i).getAdaptability(maxRepresentation) >= temp.getAdaptability(maxRepresentation)) {
+        		temp = solution.get(i);
+        		mostAdapted = i;
+        	}
+        }
+        System.out.println("\n\n Best Solution was chromossome #" + mostAdapted + ", adaptability: " + temp.getAdaptability(maxRepresentation));
+        
     }
 
     public static ArrayList<Double> generateRandom(int size) {
