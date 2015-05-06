@@ -18,6 +18,7 @@ public class Partials {
         for (int i = 0; i < solution.size(); i++) {
         	System.out.println("\nSolution #" + i + ":");
         	solution.get(i).printFactories(factories.size(), servicePoints.size(), factories);
+            System.out.println("Adaptability:" + solution.get(i).getAdaptability(maxRepresentation));
         }
         Chromosome temp = solution.get(0);
         int mostAdapted = 0;
