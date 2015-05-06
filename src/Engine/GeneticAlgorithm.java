@@ -71,7 +71,8 @@ public class GeneticAlgorithm extends Thread {
 			}
 
 			//applying mutation
-			ArrayList<Chromosome> afterMutation = mutation(newGeneration);
+			ArrayList<Chromosome> afterMutation = new ArrayList<Chromosome>();
+			afterMutation = mutation(newGeneration);
 
 			System.out.println("After Mutation: ");
 			for (int i = 0; i < afterMutation.size(); i++) {
@@ -292,18 +293,32 @@ public class GeneticAlgorithm extends Thread {
 		ArrayList<Double> mutationProb = new ArrayList<Double>();
 		mutationProb = Partials.generateRandom(newGeneration.size() * newGeneration.get(0).getRepresentation().length());
 
-		for(int i = 0; i < newGeneration.size(); i++) {
-			Chromosome tempChrom = new Chromosome(newGeneration.get(i).getServicePoints(), newGeneration.get(i).getMaxProduction());
-			afterMutation.add(tempChrom);
-			for (int j = 0; j < afterMutation.get(i).getRepresentation().length(); j++) {
-				if (mutationProb.get(((i*afterMutation.get(i).getRepresentation().length()) + j)) < mutationProbability) {
-					System.out.println("Representação inicial: " + afterMutation.get(i).getRepresentation());
-					String newRepresentation = afterMutation.get(i).getRepresentation().substring(0, j) + (afterMutation.get(i).getRepresentation().charAt(j)+1)%2 +afterMutation.get(i).getRepresentation().substring(j+1, afterMutation.get(i).getRepresentation().length());
-					System.out.println(i + ". Bite " + j + "mudou ->" + newRepresentation);
-					afterMutation.get(i).setRepresentation(newRepresentation);
-				}
-			}
+		for(int i=0;i<newGeneration.size();i++) {
+			Chromosome temp = new Chromosome(newGeneration.get(i).getServicePoints(),newGeneration.get(i).getMaxProduction());
+			temp.setRepresentation(newGeneration.get(i).getRepresentation());
+			afterMutation.add(temp);
+
 		}
+
+		for(int i=0;i<mutationProb.size();i++) {
+            if(mutationProb.get(i) < mutationProbability)
+			{
+				System.out.println("i = "+i);
+				Integer chromosomeLength = afterMutation.get(0).getRepresentation().length();
+				Integer indexChromosome = (i / chromosomeLength);
+				Integer indexMutation = i % chromosomeLength;
+
+				String newRepresentation="";
+				String oldRepresentation = afterMutation.get(indexChromosome).getRepresentation();
+				newRepresentation = oldRepresentation.substring(0,indexMutation);
+				newRepresentation += (oldRepresentation.charAt(indexMutation)+1)%2;
+				newRepresentation += oldRepresentation.substring(indexMutation+1,chromosomeLength);
+
+				afterMutation.get(indexChromosome).setRepresentation(newRepresentation);
+				System.out.println("Mutation in bit:" + indexMutation + " in the chromosome #" + indexChromosome);
+				System.out.println("Old representation: " + oldRepresentation +" new representation: "+ newRepresentation);
+			}
+        }
 		return afterMutation;
 	}
 
