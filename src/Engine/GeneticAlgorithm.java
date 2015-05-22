@@ -54,10 +54,9 @@ public class GeneticAlgorithm extends Thread {
             }
 
             //applying mutation
-            ArrayList<Chromosome> afterMutation = new ArrayList<Chromosome>();
-            afterMutation = mutation(newGeneration);
+            this.chromosomes = mutation(newGeneration);
 
-            Partials.representSolution(afterMutation, factories, servicePoints, maxProduction);
+            Partials.representSolution(this.chromosomes, factories, servicePoints, maxProduction);
         }
     }
 

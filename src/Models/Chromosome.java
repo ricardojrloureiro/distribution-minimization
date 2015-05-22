@@ -49,8 +49,8 @@ public class Chromosome {
 	/**
 	 * @return the adaptability of this chromosome
 	 */
-	public double getPenalization(int maxRepresentation) {
-		int penalty = 0;
+	public double getPenalty(int maxRepresentation) {
+		int sendingSurplus = 0;
 		int numberOfServicePoints = servicePoints.size();
 		double receives = 0;
 		String servicePointString;
@@ -60,14 +60,21 @@ public class Chromosome {
 			for (int j = 0; j < servicePoints.get(i).getFactories().size(); j++) {
 				factoryString = servicePointString.substring(j * maxRepresentation, (j + 1) * maxRepresentation);
 				if(binaryToInteger(factoryString) > servicePoints.get(i).getFactories().get(j).getProduction()) {
-					penalty += binaryToInteger(factoryString) - servicePoints.get(i).getFactories().get(j).getProduction();
+					sendingSurplus += binaryToInteger(factoryString) - servicePoints.get(i).getFactories().get(j).getProduction();
 				}
 				receives += binaryToInteger(factoryString);
 			}
 			receives -= servicePoints.get(i).getRequired();
 		}
+		receives = Math.abs(receives);
+		
+		if (sendingSurplus < 0) {
+			sendingSurplus = 0;
+		}
+		
+		System.out.println("Penalty: " + sendingSurplus + "; Receives: " + receives);
 
-		return receives + penalty;
+		return 2*(receives + sendingSurplus);
 	}
 
 	/**
@@ -78,8 +85,8 @@ public class Chromosome {
 		String servicePointString;
 		String factoryString;
 		int numberOfServicePoints = servicePoints.size();
-		Boolean mrBoolean = false;
-		double penalty = getPenalization(maxRepresentation);
+		Boolean distanceExists = false;
+		double penalty = getPenalty(maxRepresentation);
 
 		for (int i = 0; i < numberOfServicePoints; i++) {
 			servicePointString = (this.representation).substring(i * (servicePoints.get(i).getFactories().size() * maxRepresentation), (i + 1) * (servicePoints.get(i).getFactories().size() * maxRepresentation));
@@ -87,17 +94,19 @@ public class Chromosome {
 				factoryString = servicePointString.substring(j * maxRepresentation, (j + 1) * maxRepresentation);
 				if (binaryToInteger(factoryString) != 0) {
 					distance += servicePoints.get(i).distanceToFactory(servicePoints.get(i).getFactories().get(j));
-					mrBoolean = true;
+					distanceExists = true;
 				}
 			}
 		}
-
-		if (!mrBoolean) {
-			return 1 - 1/penalty;
-		} else if (penalty == 0) {
-			return Math.pow(1/distance, 2);
+		
+		System.out.println("Distance: " + distance);
+		if (penalty == 0 && distanceExists) {
+			return 1/distance;
+		} else if (!distanceExists) {
+			return 1/penalty;
 		}
-		return Math.pow(1/distance + 1/penalty,2);
+		
+		return 1/(distance + penalty);
 	}
 
 
