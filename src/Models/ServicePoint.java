@@ -1,9 +1,7 @@
 package Models;
 
 
-import Engine.GeneticAlgorithm;
 import Engine.Partials;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +22,13 @@ public class ServicePoint {
         this.required = value;
     }
 
-
+	public ServicePoint(String name, Point position, Integer required,HashMap<Factory,Integer> prod) {
+		this.name = name;
+		this.position = position;
+		this.required = required;
+		this.prodReceipts = prod;
+	}
+	
     public ArrayList<Factory> getFactories() {
 		return factories;
 	}
@@ -59,14 +63,11 @@ public class ServicePoint {
 
 	public void setProdReceipts(HashMap<Factory, Integer> prodReceipts) {
 		this.prodReceipts = prodReceipts;
-	}
+	}	
 
-	public ServicePoint(String name, Point position, Integer required,HashMap<Factory,Integer> prod) {
-		this.name = name;
-		this.position = position;
-		this.required = required;
-		this.prodReceipts = prod;
-	}
+    public void setFactories(ArrayList<Factory> factories) {
+        this.factories = factories;
+    }
 
 	/**
 	 * Depending of the quantity received between the different factories generates a specific string
@@ -87,12 +88,13 @@ public class ServicePoint {
 		return representation;
 	}
 
+	/**
+	 * Calculates distance to specified Factory 
+	 * @param factory
+	 * @return
+	 */
 	public double distanceToFactory(Factory factory) {
 		Point p1 = factory.getPosition();
 		return Math.sqrt(Math.pow((position.getX() - p1.getX()), 2) + Math.pow((position.getY() - p1.getY()), 2));
 	}
-
-    public void setFactories(ArrayList<Factory> factories) {
-        this.factories = factories;
-    }
 }

@@ -1,11 +1,5 @@
 package Models;
-
-import java.awt.font.NumericShaper;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 
 public class Chromosome {
 
@@ -16,7 +10,7 @@ public class Chromosome {
 	public Chromosome(ArrayList<ServicePoint> serv, Integer maxProduction) {
 
 		this.servicePoints = serv;
-		representation = createRepresentation(maxProduction);
+		this.representation = createRepresentation(maxProduction);
 		this.maxProduction = maxProduction;
 	}
 
@@ -26,6 +20,14 @@ public class Chromosome {
 
 	public ArrayList<ServicePoint> getServicePoints() {
 		return servicePoints;
+	}
+
+	public String getRepresentation() {
+		return this.representation;
+	}
+
+	public void setRepresentation(String representation) {
+		this.representation = representation;
 	}
 
 	/**
@@ -42,12 +44,11 @@ public class Chromosome {
 		return chromossome;
 	}
 
-	public String getRepresentation() {
-		return this.representation;
-	}
 
 	/**
-	 * @return the adaptability of this chromosome
+	 * Get Chromossome's Penalty
+	 * @param maxRepresentation
+	 * @return
 	 */
 	public double getPenalty(int maxRepresentation) {
 		int sendingSurplus = 0;
@@ -67,18 +68,19 @@ public class Chromosome {
 			receives -= servicePoints.get(i).getRequired();
 		}
 		receives = Math.abs(receives);
-		
+
 		if (sendingSurplus < 0) {
 			sendingSurplus = 0;
 		}
-		
-		System.out.println("Penalty: " + sendingSurplus + "; Receives: " + receives);
 
 		return 2*(receives + sendingSurplus);
 	}
 
 	/**
-	 * @return the penalization of this chromosome
+	 * Return the Chromossome's fitness
+	 * 
+	 * @param maxRepresentation
+	 * @return
 	 */
 	public double getAdaptability(int maxRepresentation) {
 		double distance = 0;
@@ -98,22 +100,22 @@ public class Chromosome {
 				}
 			}
 		}
-		
-		System.out.println("Distance: " + distance);
+
 		if (penalty == 0 && distanceExists) {
 			return 1/distance;
 		} else if (!distanceExists) {
 			return 1/penalty;
 		}
-		
+
 		return 1/(distance + penalty);
 	}
 
-
-	public void setRepresentation(String representation) {
-		this.representation = representation;
-	}
-
+	/**
+	 * Converts Binary to its Integer representation
+	 * 
+	 * @param binary
+	 * @return
+	 */
 	public int binaryToInteger(String binary) {
 		char[] numbers = binary.toCharArray();
 		int result = 0;
@@ -125,6 +127,13 @@ public class Chromosome {
 		return result;
 	}
 
+	/**
+	 * Prints the factories information on the console
+	 * 
+	 * @param numFactories
+	 * @param numServicePoints
+	 * @param factories
+	 */
 	public void printFactories(int numFactories, int numServicePoints, ArrayList<Factory> factories) {
 		int servicePoint = (this.getRepresentation().length())/numServicePoints;
 		int factory = servicePoint/numFactories;
@@ -132,7 +141,7 @@ public class Chromosome {
 			String tempString1 = this.getRepresentation().substring(j*servicePoint, (j+1)*servicePoint);
 			System.out.println("  Service Point #" + j + ":");
 			for (int i = 0; i < numFactories; i++) {
-				String tempString2 = this.getRepresentation().substring(i*factory, (i+1)*factory);
+				String tempString2 = tempString1.substring(i*factory, (i+1)*factory);
 				if (binaryToInteger(this.getRepresentation()) > 0) {
 					System.out.println("  Factory #" + i + ": " + "Position [" + factories.get(i).getPosition().getX() + ", " + factories.get(i).getPosition().getY() + "], sends: " + binaryToInteger(tempString2));
 				}
