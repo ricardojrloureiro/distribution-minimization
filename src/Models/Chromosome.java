@@ -56,6 +56,7 @@ public class Chromosome {
 		double receives = 0;
 		String servicePointString;
 		String factoryString;
+		ArrayList<Double> receivedExtra = new ArrayList<Double>();
 		for (int i = 0; i < numberOfServicePoints; i++) {
 			servicePointString = (this.representation).substring(i * (servicePoints.get(i).getFactories().size() * maxRepresentation), (i + 1) * (servicePoints.get(i).getFactories().size() * maxRepresentation));
 			for (int j = 0; j < servicePoints.get(i).getFactories().size(); j++) {
@@ -66,13 +67,18 @@ public class Chromosome {
 				receives += binaryToInteger(factoryString);
 			}
 			receives -= servicePoints.get(i).getRequired();
+			receivedExtra.add(receives);
+			receives=0;
 		}
-		receives = Math.abs(receives);
+		
+		for(int i = 0; i < receivedExtra.size(); i++) {
+			receives += Math.abs(receivedExtra.get(i));
+		}
 
 		if (sendingSurplus < 0) {
 			sendingSurplus = 0;
 		}
-
+		
 		return 2*(receives + sendingSurplus);
 	}
 

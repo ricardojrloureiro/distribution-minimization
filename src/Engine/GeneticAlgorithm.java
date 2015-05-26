@@ -274,7 +274,6 @@ public class GeneticAlgorithm extends Thread {
 
 		for (int i = 0; i < mutationProb.size(); i++) {
 			if (mutationProb.get(i) < mutationProbability) {
-				System.out.println("i = " + i);
 				Integer chromosomeLength = afterMutation.get(0).getRepresentation().length();
 				Integer indexChromosome = (i / chromosomeLength);
 				Integer indexMutation = i % chromosomeLength;
