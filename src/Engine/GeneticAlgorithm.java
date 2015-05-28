@@ -55,7 +55,8 @@ public class GeneticAlgorithm extends Thread {
 			//applying mutation
 			this.chromosomes = mutation(newGeneration);
 
-			Partials.representSolution(this.chromosomes, factories, servicePoints, maxProduction);
+            if(n==0 || n+1==generationsNumber)
+			    Partials.representSolution(this.chromosomes, factories, servicePoints, maxProduction);
 		}
 	}
 

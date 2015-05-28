@@ -113,7 +113,7 @@ public class Chromosome {
 			return 1/penalty;
 		}
 
-		return 1/(distance + penalty);
+		return 100/(distance + penalty);
 	}
 
 	/**
