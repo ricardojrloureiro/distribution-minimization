@@ -145,7 +145,7 @@ public class Chromosome {
 		int factory = servicePoint/numFactories;
 		for(int j = 0; j<numServicePoints; j++) {
 			String tempString1 = this.getRepresentation().substring(j*servicePoint, (j+1)*servicePoint);
-			System.out.println("  Service Point #" + j + ":");
+			System.out.println("  Service Point #" + j + " [" + getServicePoints().get(j).getPosition().getX() + ", " + getServicePoints().get(j).getPosition().getY() + "]:");
 			for (int i = 0; i < numFactories; i++) {
 				String tempString2 = tempString1.substring(i*factory, (i+1)*factory);
 				if (binaryToInteger(this.getRepresentation()) > 0) {
